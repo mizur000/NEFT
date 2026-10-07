@@ -1,0 +1,178 @@
+{
+  "source_name": "kaggle1.csv",
+  "source_sha256": "28711e39dcef463db8cb6ff967356dc17cb67e2a289e431af8d4ccaee6a44938",
+  "encoding": "utf-8-sig",
+  "delimiter": ",",
+  "ignored_columns": [],
+  "target": "Condition",
+  "features": [
+    "Pipe_Size_mm",
+    "Thickness_mm",
+    "Max_Pressure_psi",
+    "Temperature_C",
+    "Corrosion_Impact_Percent",
+    "Thickness_Loss_mm",
+    "Material_Loss_Percent",
+    "Time_Years",
+    "Material",
+    "Grade"
+  ],
+  "numeric_features": [
+    "Pipe_Size_mm",
+    "Thickness_mm",
+    "Max_Pressure_psi",
+    "Temperature_C",
+    "Corrosion_Impact_Percent",
+    "Thickness_Loss_mm",
+    "Material_Loss_Percent",
+    "Time_Years"
+  ],
+  "categorical_features": [
+    "Material",
+    "Grade"
+  ],
+  "classes": [
+    "Critical",
+    "Moderate",
+    "Normal"
+  ],
+  "records": 1000,
+  "train_records": 800,
+  "test_records": 200,
+  "class_counts": {
+    "Critical": 487,
+    "Moderate": 299,
+    "Normal": 214
+  },
+  "selected_model": "forest",
+  "selection_metric": "training CV macro-F1",
+  "seed": 42,
+  "cv_folds": 5,
+  "test_fraction": 0.2,
+  "test_accuracy": 1.0,
+  "test_macro_f1": 1.0,
+  "classification_report": {
+    "Normal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 43.0
+    },
+    "Moderate": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 60.0
+    },
+    "Critical": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 97.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 200.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 200.0
+    }
+  },
+  "without_wear_control": {
+    "cv_macro_f1": 0.2922032611181897,
+    "cv_macro_f1_std": 0.02276362725098926,
+    "cv_balanced_accuracy": 0.3377130104633233
+  },
+  "data_checks": {
+    "flagged_records": 119,
+    "flag_counts": {
+      "loss_exceeds_thickness": 119,
+      "material_loss_above_100": 119,
+      "corrosion_outside_0_100": 0
+    },
+    "thickness_rule_matches": 1000,
+    "thickness_rule_records": 1000,
+    "material_loss_ratio_matches_at_0_01": 1000,
+    "material_loss_ratio_max_absolute_error": 0.005000000000002558,
+    "class_thickness_loss_ranges": {
+      "Normal": {
+        "min": 0.01,
+        "max": 1.99
+      },
+      "Moderate": {
+        "min": 2.04,
+        "max": 5.0
+      },
+      "Critical": {
+        "min": 5.01,
+        "max": 9.99
+      }
+    }
+  },
+  "versions": {
+    "python": "3.14.4",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "source_unchanged": true,
+  "training_categories": {
+    "Material": [
+      "Carbon Steel",
+      "Fiberglass",
+      "HDPE",
+      "PVC",
+      "Stainless Steel"
+    ],
+    "Grade": [
+      "API 5L X42",
+      "API 5L X52",
+      "API 5L X65",
+      "ASTM A106 Grade B",
+      "ASTM A333 Grade 6"
+    ]
+  },
+  "training_numeric_ranges": {
+    "Pipe_Size_mm": {
+      "min": 50.0,
+      "max": 1500.0
+    },
+    "Thickness_mm": {
+      "min": 3.0,
+      "max": 49.53
+    },
+    "Max_Pressure_psi": {
+      "min": 150.0,
+      "max": 2500.0
+    },
+    "Temperature_C": {
+      "min": -48.4,
+      "max": 149.7
+    },
+    "Corrosion_Impact_Percent": {
+      "min": 0.0,
+      "max": 20.0
+    },
+    "Thickness_Loss_mm": {
+      "min": 0.01,
+      "max": 9.99
+    },
+    "Material_Loss_Percent": {
+      "min": 0.08,
+      "max": 292.92
+    },
+    "Time_Years": {
+      "min": 1.0,
+      "max": 25.0
+    }
+  },
+  "probabilities_calibrated": false
+}
