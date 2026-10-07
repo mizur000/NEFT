@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мониторинг фонда скважин</title>
+<style>
+:root{color-scheme:dark;--bg:#0a0f15;--card:#111a24;--line:#273446;--muted:#a9b7c8;--text:#edf3fc;--blue:#68a9ff;--green:#4cd7a2;--amber:#efbc62;--red:#f17680;--gray:#8e9caf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",Arial,sans-serif}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,[role=button]:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+button{color:var(--text);border:1px solid var(--line);background:#192637;border-radius:8px;padding:9px 13px}button:hover{background:#243950}button:disabled{opacity:.4;cursor:default}
+input,select{border:1px solid #35445a;border-radius:9px;background:#101a26;color:var(--text);height:39px;padding:0 12px;min-width:0}input::placeholder{color:#99a9bd}input{flex:1}
+small,.muted{color:var(--muted)}h2,h3,p{margin:0}.section-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px}.eyebrow{font-size:10px;letter-spacing:.17em;color:var(--blue);font-weight:650;margin-bottom:6px}.section-top h2{font-size:23px;letter-spacing:-.5px;font-weight:650}.source-label{padding:6px 10px;border:1px solid var(--line);border-radius:20px;font-size:11px;color:#b7c8dc}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}.kpi{position:relative;border:1px solid var(--line);border-radius:13px;padding:16px 18px 14px;background:linear-gradient(125deg,#162230,#111923);overflow:hidden}.kpi:after{content:"";position:absolute;inset:auto 18px 0;height:2px;background:var(--color);opacity:.65}.kpi-label{font-size:12px;color:#b8c6d8}.kpi-number{font-size:31px;font-weight:650;letter-spacing:-1px;margin:7px 0;color:var(--color)}.kpi-foot{font-size:11px;color:#98aac0}
+.toolbar{display:flex;gap:10px;margin-bottom:14px}.toolbar input{max-width:370px}.toolbar select{max-width:240px}.toolbar .count{margin-left:auto;align-self:center;font-size:12px;color:var(--muted);white-space:nowrap}
+.map-grid{display:grid;grid-template-columns:minmax(0,1fr) 288px;gap:14px;margin-bottom:18px}
+.map-box,.detail,.chart-card,.table-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.map-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid #233145}.map-head strong{font-size:14px}.map-head span{font-size:11px;color:var(--muted)}
+.canvas{position:relative;background:radial-gradient(ellipse at 25% 40%,#132731,transparent 72%),#0d1822;overflow:hidden}.canvas svg{width:100%;height:425px;display:block;touch-action:pan-y}.map-controls{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:5px;z-index:1}.map-controls button{width:32px;height:31px;padding:0;background:#132333;color:#c2d2e6}.map-controls .north{font-size:10px;text-align:center;margin-bottom:8px;color:#b9cce2}
+.tower{cursor:pointer;transition:opacity .1s}.tower .rig{stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;fill:none}.tower .plate{fill:#0c1520;stroke:#435366;stroke-width:1}.tower .selection-ring{opacity:0;fill:none;stroke:#80bbff;stroke-width:2}.tower.selected .selection-ring{opacity:1}.tower.selected .plate{stroke:#80bbff;fill:#182c42}.tower:hover .plate{fill:#243b50;stroke:#d6e6f8}.tower text{font-size:10px;font-weight:600;fill:#c3d2e1;pointer-events:none}.tower:hover text,.tower.selected text{fill:white}
+.map-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 15px;background:#101b27;border-top:1px solid #253245;font-size:11px;color:#b7c8db}.page-nav{display:flex;align-items:center;gap:9px}.page-nav button{padding:3px 9px;font-size:13px}.legend{display:flex;gap:10px;flex-wrap:wrap}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.detail{padding:18px;display:flex;flex-direction:column;min-width:0}.detail .eyebrow{margin-bottom:7px}.well-name{font-size:23px;font-weight:650;line-height:1.25;overflow-wrap:anywhere;letter-spacing:-.6px}.badge{display:inline-flex;gap:6px;align-items:center;padding:5px 8px;border-radius:7px;border:1px solid #405166;font-size:11px;margin-top:10px;width:fit-content}
+.score{font-size:35px;font-weight:650;letter-spacing:-1px;margin-top:18px}.score span{font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0}.score-label{font-size:11px;color:#b7c7da;margin-top:2px}.progress{height:5px;border-radius:4px;background:#263549;margin:12px 0 18px;overflow:hidden}.progress>div{height:100%;background:var(--blue)}
+.parameters{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;margin-bottom:15px}.parameter small{display:block;font-size:10px;line-height:1.4;color:#9cadc2}.parameter b{display:block;font-size:15px;font-weight:600;margin-top:3px}.note{font-size:11px;line-height:1.5;color:#c1cedd;padding-top:11px;border-top:1px solid #2a384b;margin-bottom:12px}.detail-actions{display:grid;gap:8px;margin-top:auto}.primary{background:#3a88df;border-color:#5da6f7;color:white;font-weight:600}.primary:hover{background:#4798ec}.detail-actions button{font-size:12px}.ack{font-size:11px;color:var(--blue);margin-top:8px}
+.tabs{display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line);margin-bottom:15px}.tab{background:none;border:0;border-radius:0;padding:12px 18px;color:#a8bacf;border-bottom:2px solid transparent;font-size:13px}.tab.active{color:#dceaff;border-bottom-color:var(--blue)}.tab:hover{background:#14202d}.tab-spacer{flex:1}.export{font-size:11px;padding:6px 10px;margin-bottom:5px}
+.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.chart-card{padding:17px 18px;min-height:240px}.chart-title{font-size:13px;font-weight:650;margin-bottom:5px}.chart-sub{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:12px}.donut-wrap{display:flex;gap:18px;align-items:center;justify-content:center;margin-top:15px}.donut-wrap svg{width:137px;height:137px;flex-shrink:0}.donut-legend{display:grid;gap:12px;font-size:11px}.donut-legend b{margin-left:5px;font-variant-numeric:tabular-nums}
+.hrow{display:grid;grid-template-columns:96px 1fr 32px;gap:9px;align-items:center;font-size:11px;margin:14px 0}.hrow .track{height:7px;border-radius:4px;background:#233144;overflow:hidden}.hrow .track div{height:100%;background:#629cde;border-radius:4px}.hrow .value{text-align:right;color:#c7d6e9}.hist{display:flex;align-items:flex-end;height:125px;gap:7px;padding:0 3px}.hist-bin{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.hist-bin .bar{width:100%;background:linear-gradient(#77b7ec,#345c85);border-radius:4px 4px 0 0;min-height:2px}.hist-bin small{font-size:9px;color:#a5b5c9;margin-top:8px}.hist-count{font-size:10px;color:#bac9dc;margin-bottom:6px}
+.table-card{overflow-x:auto}.data-table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}.data-table th{background:#172536;color:#aebfd4;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:12px 15px}.data-table td{padding:11px 15px;border-top:1px solid #243145}.data-table tbody tr:hover{background:#172638}.data-table button{padding:4px 7px;font-size:11px}.data-table .id-link{border:0;background:none;padding:0;color:#8cbeff;font-weight:600}.table-bottom{display:flex;justify-content:space-between;padding:12px 15px;font-size:11px;color:var(--muted);border-top:1px solid var(--line)}
+.source-note{font-size:11px;color:#91a4ba;line-height:1.5;margin:14px 0 4px}.tooltip{position:fixed;pointer-events:none;z-index:10;display:none;background:#1e3045;border:1px solid #4b647c;padding:10px 12px;border-radius:9px;font-size:12px;line-height:1.7;color:#eaf2ff;box-shadow:0 9px 30px #0005;max-width:250px}
+.empty{padding:45px;text-align:center;color:#b4c5d9}.full{grid-column:1/-1}.notice{padding:12px;color:#bacce1;border:1px solid var(--line);border-radius:8px}
+@media(max-width:1080px){.kpis{gap:8px}.kpi{padding:13px 11px}.kpi-label{font-size:11px}.map-grid{grid-template-columns:minmax(0,1fr) 258px}.charts{grid-template-columns:1fr 1fr}.chart-card:last-child{grid-column:1/-1;min-height:180px}.donut-wrap{gap:12px}.map-footer{align-items:flex-start}.legend{gap:5px}}
+@media(max-width:710px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi:first-child{grid-column:1/-1;display:flex;align-items:center;gap:20px}.kpi:first-child .kpi-number{margin:0}.map-grid{grid-template-columns:1fr}.canvas svg{height:365px}.detail{display:block}.parameters{grid-template-columns:repeat(4,1fr)}.detail-actions{grid-template-columns:1fr 1fr}.charts{grid-template-columns:1fr}.chart-card:last-child{grid-column:auto}.toolbar{flex-wrap:wrap}.toolbar input{max-width:none;flex-basis:100%}.toolbar select{flex:1;max-width:50%}.toolbar .count{width:100%;margin:0}.map-footer{flex-direction:column;gap:8px}.section-top{align-items:flex-start}.section-top h2{font-size:19px}.source-label{font-size:10px}.tab{padding:12px 9px}.export{font-size:10px}.parameters{gap:10px}.parameter b{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div class="section-top"><div><div class="eyebrow">НЕФТЬ / ЦЕНТР МОНИТОРИНГА</div><h2>Обзор фонда и карта вышек</h2></div><span class="source-label" id="sourceTag">Данные из реестра</span></div>
+<div id="kpis" class="kpis"></div>
+<div class="toolbar">
+<input type="search" id="search" aria-label="Поиск вышки" placeholder="Найти вышку по номеру или названию">
+<select id="statusFilter" aria-label="Фильтр состояния"><option value="all">Все состояния</option><option value="Critical">Критический сигнал</option><option value="Moderate">Отклонения</option><option value="Normal">Норма</option><option value="Unknown">Проверить данные</option></select>
+<select id="materialFilter" aria-label="Фильтр материала"><option value="all">Все материалы</option></select>
+<button id="resetFilters">Сбросить</button><span id="filterCount" class="count"></span>
+</div>
+<div class="map-grid">
+<section class="map-box">
+<div class="map-head"><strong>Карта вышек</strong><span id="mapKind">Схематичное расположение</span></div>
+<div class="canvas" id="canvas">
+<div class="map-controls"><div class="north">С ↑</div><button id="zoomIn" aria-label="Приблизить карту">+</button><button id="zoomOut" aria-label="Отдалить карту">−</button><button id="zoomReset" aria-label="Сбросить масштаб">1:1</button></div>
+<svg id="wellMap" viewBox="0 0 940 480" role="group" aria-label="Интерактивная карта вышек"></svg>
+</div>
+<div class="map-footer"><div class="legend"><span><i class="dot" style="background:var(--green)"></i>Норма</span><span><i class="dot" style="background:var(--amber)"></i>Отклонения</span><span><i class="dot" style="background:var(--red)"></i>Критично</span><span><i class="dot" style="background:var(--gray)"></i>Проверка данных</span></div><div class="page-nav"><button id="prevPage" aria-label="Предыдущие вышки">←</button><span id="pageInfo"></span><button id="nextPage" aria-label="Следующие вышки">→</button></div></div>
+</section>
+<aside class="detail" id="detail"></aside>
+</div>
+<div class="tabs"><button class="tab active" data-tab="overview">Аналитика</button><button class="tab" data-tab="signals">Сигналы</button><button class="tab" data-tab="registry">Реестр</button><div class="tab-spacer"></div><button class="export" id="export">Скачать CSV</button></div>
+<div id="tabContent"></div>
+<p class="source-note" id="provenance"></p>
+<div id="tooltip" class="tooltip"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const LABEL={Normal:"Норма",Moderate:"Отклонения",Critical:"Критический сигнал",Unknown:"Проверить данные"};
+const COLOR={Normal:"#4cd7a2",Moderate:"#efbc62",Critical:"#f17680",Unknown:"#8e9caf"};
+const MATERIAL={"Carbon Steel":"Углеродистая сталь","Stainless Steel":"Нержавеющая сталь","Fiberglass":"Стеклопластик","HDPE":"Полиэтилен","PVC":"ПВХ"};
+const CLASS={Normal:"Нормальное состояние",Moderate:"Умеренные отклонения",Critical:"Критическое состояние"};
+let data={records:[],selected_id:null,acknowledged:[],has_geo:false,generated_ids:true,source:""}, rows=[],page=0,tab="overview",tablePage=0,zoom=1,nonce=0;
+let PAGE=window.innerWidth<=710?15:30;const TABLE_PAGE=12;
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=(v,n=1)=>v==null||!Number.isFinite(Number(v))?"—":Number(v).toLocaleString("ru-RU",{maximumFractionDigits:n,minimumFractionDigits:n});
+const integer=v=>Number(v).toLocaleString("ru-RU");
+const signal=r=>LABEL[r.signal]||LABEL.Unknown;
+const risk=r=>r.p_critical==null?"—":fmt(r.p_critical*100)+"%";
+function post(type,extra={}) {window.parent.postMessage({isStreamlitMessage:true,type,...extra},"*");}
+let lastHeight=0;function height(){const h=Math.ceil(document.body.getBoundingClientRect().height)+2;if(Math.abs(h-lastHeight)>1){lastHeight=h;post("streamlit:setFrameHeight",{height:h});}}
+function emit(action,id){post("streamlit:setComponentValue",{dataType:"json",value:{action,id,nonce:Date.now()+"-"+(++nonce)}});}
+function filters(){const q=$("search").value.trim().toLocaleLowerCase("ru");return data.records.filter(r=>(!q||(r.id+" "+r.name).toLocaleLowerCase("ru").includes(q))&&($("statusFilter").value==="all"||r.signal===$("statusFilter").value)&&($("materialFilter").value==="all"||r.inputs.Material===$("materialFilter").value));}
+function counts(list){return Object.fromEntries(Object.keys(LABEL).map(s=>[s,list.filter(r=>r.signal===s).length]));}
+function selectWell(id){data.selected_id=id;drawMap();drawDetail();emit("select",id);}
+function ackWell(id){const r=data.records.find(r=>r.id===id);if(!r||r.signal==="Normal")return; if(!data.acknowledged.includes(id))data.acknowledged.push(id);drawDetail();drawTab();emit("ack",id);}
+function renderKpis(){const c=counts(rows),n=rows.length;const cards=[["Объектов в выборке",n,"#83b8ff","Текущий снимок реестра"],["Критический сигнал",c.Critical,COLOR.Critical,"Требует проверки специалистом"],["Отклонения",c.Moderate,COLOR.Moderate,"Дополнительная диагностика"],["Норма по модели",c.Normal,COLOR.Normal,"Не подтверждение безопасности"],["Проверить данные",c.Unknown,COLOR.Unknown,"Замечания к исходным значениям"]];$("kpis").innerHTML=cards.map(([label,value,color,foot])=>`<div class="kpi" style="--color:${color}"><div class="kpi-label">${label}</div><div class="kpi-number">${integer(value)}</div><div class="kpi-foot">${foot}</div></div>`).join("");}
+function background(){return `<defs><pattern id="smallGrid" width="31" height="31" patternUnits="userSpaceOnUse"><path d="M31 0H0V31" fill="none" stroke="#405465" stroke-opacity=".18" stroke-width=".7"/></pattern><radialGradient id="ground"><stop stop-color="#24453e" stop-opacity=".25"/><stop offset="1" stop-color="#0c1822" stop-opacity="0"/></radialGradient></defs><rect width="940" height="480" fill="#0e1923"/><rect width="940" height="480" fill="url(#smallGrid)"/><ellipse cx="680" cy="235" rx="420" ry="290" fill="url(#ground)"/>
+<g fill="none" stroke="#3d6b63" stroke-opacity=".13" stroke-width="1.2"><path d="M-100 450Q140 210 320 360T1040 40"/><path d="M-70 460Q150 245 330 380T1050 90"/><path d="M-20 475Q170 280 330 407T1070 130"/><path d="M-50 100Q180 -75 470 60T1000 -30"/><path d="M-70 130Q195 -47 465 85T1000 -3"/><path d="M-90 160Q190 -20 450 110T1000 24"/></g>
+<g fill="none" stroke="#3b5363" stroke-opacity=".45" stroke-dasharray="5 7"><path d="M25 245H915"/><path d="M471 18V458"/></g><g fill="#6f8599" font-size="9" font-family="Segoe UI,Arial" letter-spacing="2"><text x="24" y="23">ПЛАН ОБЪЕКТОВ</text><text x="737" y="465">НЕ ДЛЯ НАВИГАЦИИ</text></g>`;}
+function drawMap(){
+const total=Math.max(1,Math.ceil(rows.length/PAGE));page=Math.min(Math.max(page,0),total-1);
+const visible=rows.slice(page*PAGE,(page+1)*PAGE);
+let svg=background();const geo=data.has_geo;
+let latmin=0,latmax=0,lonmin=0,lonmax=0;if(geo&&visible.length){latmin=Math.min(...visible.map(r=>r.latitude));latmax=Math.max(...visible.map(r=>r.latitude));lonmin=Math.min(...visible.map(r=>r.longitude));lonmax=Math.max(...visible.map(r=>r.longitude));}
+visible.forEach((r,i)=>{let x,y;if(geo){x=55+(r.longitude-lonmin)/(lonmax-lonmin||1)*(window.innerWidth<=710?350:790);y=410-(r.latitude-latmin)/(latmax-latmin||1)*335;}else{const columns=window.innerWidth<=710?3:6;const col=i%columns,row=Math.floor(i/columns);x=83+col*146+(row%2?10:0);y=70+row*83;}
+const color=COLOR[r.signal]||COLOR.Unknown;const selected=r.id===data.selected_id;
+svg+=`<g class="tower${selected?" selected":""}" data-id="${esc(r.id)}" transform="translate(${x},${y})" role="button" tabindex="0" aria-label="${esc(r.name)}, ${esc(signal(r))}" aria-pressed="${selected}">
+<circle r="30" fill="transparent"/><circle class="selection-ring" r="25"/><rect class="plate" x="-20" y="-23" width="40" height="46" rx="11"/>
+<g class="rig" stroke="${color}"><path d="M-12 15H12M-10 13L-3-16H3L10 13M-7 3H7M-5-6H5M-7 3L7 13M7 3L-7 13M-5-6L7 3M5-6L-7 3M-3-15L5-6M3-15L-5-6"/><path d="M0-20V-17M-4-20H4"/></g>
+<circle cx="18" cy="-19" r="4" fill="${color}" stroke="#111b25" stroke-width="2"/><text text-anchor="middle" y="38">${esc(r.id.length>14?r.id.slice(0,13)+"…":r.id)}</text></g>`;});
+if(!visible.length)svg+='<text x="470" y="240" fill="#b9c9db" text-anchor="middle" font-size="16">Нет объектов по выбранным фильтрам</text>';
+$("wellMap").innerHTML=svg;applyZoom();
+$("pageInfo").textContent=`${page+1} / ${total}`;$("prevPage").disabled=page===0;$("nextPage").disabled=page>=total-1;
+$("mapKind").textContent=geo?"По координатам реестра":`Условный план · ${visible.length} из ${rows.length}`;
+document.querySelectorAll(".tower").forEach(el=>{
+el.addEventListener("click",()=>selectWell(el.dataset.id));
+el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectWell(el.dataset.id);}});
+el.addEventListener("pointerenter",e=>{const r=data.records.find(r=>r.id===el.dataset.id);$("tooltip").innerHTML=`<b>${esc(r.name)}</b><br>${esc(signal(r))}<br>Критическое состояние: ${risk(r)}`;$("tooltip").style.display="block";moveTip(e);});
+el.addEventListener("pointermove",moveTip);el.addEventListener("pointerleave",()=>{$("tooltip").style.display="none";});});
+}
+function moveTip(e){const t=$("tooltip");t.style.left=Math.max(5,Math.min(e.clientX+12,window.innerWidth-260))+"px";t.style.top=Math.max(5,e.clientY-t.offsetHeight-12)+"px";}
+function applyZoom(){const fullWidth=window.innerWidth<=710?470:940;const w=fullWidth/zoom,h=480/zoom;$("wellMap").setAttribute("viewBox",`${(fullWidth-w)/2} ${(480-h)/2} ${w} ${h}`);}
+function drawDetail(){
+const r=data.records.find(r=>r.id===data.selected_id);
+if(!r){$("detail").innerHTML='<div class="eyebrow">КАРТОЧКА ОБЪЕКТА</div><div class="empty">Нажмите на вышку на карте</div>';return;}
+const c=COLOR[r.signal],v=r.inputs,ack=data.acknowledged.includes(r.id);
+let note=r.notes.length?r.notes[0]:r.signal==="Critical"?"Передать ответственному специалисту. Решение об остановке принимается по регламенту объекта.":r.signal==="Moderate"?"Передать параметры на дополнительную диагностику.":"Плановый контроль по регламенту объекта.";
+$("detail").innerHTML=`<div class="eyebrow">ВЫБРАННЫЙ ОБЪЕКТ</div><div class="well-name">${esc(r.name)}</div><div class="badge" style="color:${c};border-color:${c}55;background:${c}12"><i class="dot" style="background:${c}"></i>${esc(signal(r))}</div>
+<div class="score">${risk(r).replace("%",'<span> %</span>')}</div><div class="score-label">Оценка критического состояния</div>
+<div class="progress"><div style="width:${r.p_critical==null?0:r.p_critical*100}%"></div></div>
+<div class="parameters"><div class="parameter"><small>Температура</small><b>${fmt(v.Temperature_C)} °C</b></div><div class="parameter"><small>Макс. давление</small><b>${fmt(v.Max_Pressure_psi,0)} psi</b></div><div class="parameter"><small>Толщина стенки</small><b>${fmt(v.Thickness_mm,2)} мм</b></div><div class="parameter"><small>Потеря толщины</small><b>${fmt(v.Thickness_Loss_mm,2)} мм</b></div></div>
+<div class="note">${esc(note)}</div><div class="detail-actions"><button class="primary" id="openRecord">Подставить в параметры</button>${r.signal!=="Normal"?`<button id="ackRecord" ${ack?"disabled":""}>${ack?"Сигнал принят в работу":"Принять сигнал в работу"}</button>`:""}</div>${ack?'<div class="ack">Тревога не снята. Отметка действует в этой сессии.</div>':""}`;
+$("openRecord").onclick=()=>emit("select",r.id);if($("ackRecord"))$("ackRecord").onclick=()=>ackWell(r.id);
+}
+function donut(){const c=counts(rows),n=rows.length,r=49,circ=2*Math.PI*r;let offset=0;
+const segments=Object.keys(LABEL).map(s=>{const length=n?c[s]/n*circ:0;const out=`<circle cx="70" cy="70" r="${r}" fill="none" stroke="${COLOR[s]}" stroke-width="12" stroke-dasharray="${length} ${circ}" stroke-dashoffset="${-offset}" transform="rotate(-90 70 70)"/>`;offset+=length;return out;}).join("");
+return `<div class="chart-card"><div class="chart-title">Состояние фонда</div><div class="chart-sub">Сигналы модели с учётом качества данных</div><div class="donut-wrap"><svg viewBox="0 0 140 140"><circle cx="70" cy="70" r="49" stroke="#273447" stroke-width="12" fill="none"/>${segments}<text x="70" y="69" fill="#edf3fc" font-size="25" text-anchor="middle" font-weight="650">${integer(n)}</text><text x="70" y="87" fill="#a8bbce" font-size="10" text-anchor="middle">объектов</text></svg><div class="donut-legend">${Object.keys(LABEL).map(s=>`<div><i class="dot" style="background:${COLOR[s]}"></i>${s==="Critical"?"Критично":s==="Unknown"?"Данные":LABEL[s]} <b>${integer(c[s])}</b></div>`).join("")}</div></div></div>`;}
+function histogram(){let bins=Array(5).fill(0);rows.forEach(r=>{let v=r.inputs.Thickness_Loss_mm;if(v!==null)bins[Math.min(4,Math.max(0,Math.floor(v/2)))]+=1;});const max=Math.max(1,...bins),labels=["0–2","2–4","4–6","6–8","8+"];return `<div class="chart-card"><div class="chart-title">Распределение потери толщины</div><div class="chart-sub">Количество записей по интервалам, мм</div><div class="hist">${bins.map((v,i)=>`<div class="hist-bin"><div class="hist-count">${integer(v)}</div><div class="bar" style="height:${v/max*85}px"></div><small>${labels[i]}</small></div>`).join("")}</div><div class="chart-sub" style="margin-top:13px;margin-bottom:0">Интервалы графика, не пороги отключения.</div></div>`;}
+function materials(){const counts={};rows.forEach(r=>{const m=r.inputs.Material||"Нет данных";counts[m]=(counts[m]||0)+1;});const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);const max=Math.max(1,...Object.values(counts));return `<div class="chart-card"><div class="chart-title">Материалы объектов</div><div class="chart-sub">Состав выбранного реестра</div>${sorted.slice(0,6).map(([m,n])=>`<div class="hrow"><span title="${esc(MATERIAL[m]||m)}">${esc(MATERIAL[m]||m)}</span><div class="track"><div style="width:${n/max*100}%"></div></div><span class="value">${integer(n)}</span></div>`).join("")}</div>`;}
+function drawTab(){
+document.querySelectorAll("[data-tab]").forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
+if(tab==="overview"){$("tabContent").innerHTML=`<div class="charts">${donut()}${histogram()}${materials()}</div>`;height();return;}
+const order={Critical:0,Unknown:1,Moderate:2,Normal:3};
+let list=tab==="signals"?rows.filter(r=>r.signal!=="Normal").sort((a,b)=>(order[a.signal]-order[b.signal])||((b.p_critical||0)-(a.p_critical||0))):rows;
+const pages=Math.max(1,Math.ceil(list.length/TABLE_PAGE));tablePage=Math.min(tablePage,pages-1);const visible=list.slice(tablePage*TABLE_PAGE,(tablePage+1)*TABLE_PAGE);
+$("tabContent").innerHTML=`<section class="table-card"><table class="data-table"><thead><tr><th>Объект</th><th>Сигнал</th><th>Критич. состояние, %</th><th>Потеря стенки, мм</th><th>Материал</th><th>Обработка сигнала</th></tr></thead><tbody>${visible.map(r=>`<tr><td><button class="id-link" data-select="${esc(r.id)}">${esc(r.name)}</button></td><td><i class="dot" style="background:${COLOR[r.signal]}"></i>${esc(signal(r))}</td><td>${risk(r)}</td><td>${fmt(r.inputs.Thickness_Loss_mm,2)}</td><td>${esc(MATERIAL[r.inputs.Material]||r.inputs.Material)}</td><td>${r.signal==="Normal"?"—":data.acknowledged.includes(r.id)?"Принят в работу":`<button data-ack="${esc(r.id)}">Принять</button>`}</td></tr>`).join("")||'<tr><td colspan="6">По выбранным фильтрам записей нет.</td></tr>'}</tbody></table><div class="table-bottom"><span>${integer(list.length)} записей</span><div class="page-nav"><button id="tablePrev" ${tablePage===0?"disabled":""}>←</button>${tablePage+1} / ${pages}<button id="tableNext" ${tablePage>=pages-1?"disabled":""}>→</button></div></div></section>`;
+document.querySelectorAll("[data-select]").forEach(el=>el.onclick=()=>selectWell(el.dataset.select));document.querySelectorAll("[data-ack]").forEach(el=>el.onclick=()=>ackWell(el.dataset.ack));
+$("tablePrev").onclick=()=>{tablePage--;drawTab();};$("tableNext").onclick=()=>{tablePage++;drawTab();};height();
+}
+function render(){rows=filters();$("filterCount").textContent=`${integer(rows.length)} из ${integer(data.records.length)} объектов`;renderKpis();drawMap();drawDetail();drawTab();
+$("sourceTag").textContent="Источник: "+data.source;$("provenance").textContent=(data.generated_ids?"Идентификаторы вышек условные; каждая вышка соответствует одной записи CSV. ":"")+(data.has_geo?"Координатный план по данным реестра. ":"Расположение на схеме условное, не реальные координаты. ")+"Показан снимок данных, не онлайн-телеметрия. Сигнал модели не является командой отключения.";}
+function receive(args){
+const oldSelected=data.selected_id;data={...data,...args};if(!Array.isArray(data.records))data.records=[];if(!Array.isArray(data.acknowledged))data.acknowledged=[];
+const material=$("materialFilter").value;
+const options=[...new Set(data.records.map(r=>r.inputs.Material).filter(Boolean))].sort();$("materialFilter").innerHTML='<option value="all">Все материалы</option>'+options.map(v=>`<option value="${esc(v)}">${esc(MATERIAL[v]||v)}</option>`).join("");$("materialFilter").value=options.includes(material)?material:"all";
+if(!data.records.some(r=>r.id===data.selected_id))data.selected_id=data.records[0]?.id||null;
+if(oldSelected&&oldSelected!==data.selected_id){const filtered=filters();const index=filtered.findIndex(r=>r.id===data.selected_id);if(index>=0)page=Math.floor(index/PAGE);}
+render();}
+function csvCell(value){let text=String(value??"");if(/^[=+\-@\t\r]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
+$("export").onclick=()=>{const output=[["Идентификатор","Название","Сигнал","Класс модели","Оценка Критич. состояние, %","Потеря толщины, мм","Материал","Замечания"],...rows.map(r=>[r.id,r.name,signal(r),CLASS[r.label]||"Нет оценки",r.p_critical==null?"":(r.p_critical*100).toFixed(2),r.inputs.Thickness_Loss_mm,MATERIAL[r.inputs.Material]||r.inputs.Material,r.notes.join(" ")])];const blob=new Blob(["\ufeff"+output.map(row=>row.map(csvCell).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="reestr_signalov.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$("search").oninput=()=>{page=0;tablePage=0;render();};["statusFilter","materialFilter"].forEach(id=>$(id).onchange=()=>{page=0;tablePage=0;render();});
+$("resetFilters").onclick=()=>{$("search").value="";$("statusFilter").value="all";$("materialFilter").value="all";page=0;tablePage=0;render();};
+$("prevPage").onclick=()=>{page--;drawMap();};$("nextPage").onclick=()=>{page++;drawMap();};
+$("zoomIn").onclick=()=>{zoom=Math.min(2.5,zoom+.25);applyZoom();};$("zoomOut").onclick=()=>{zoom=Math.max(1,zoom-.25);applyZoom();};$("zoomReset").onclick=()=>{zoom=1;applyZoom();};
+document.querySelectorAll("[data-tab]").forEach(el=>el.onclick=()=>{tab=el.dataset.tab;tablePage=0;drawTab();});
+window.addEventListener("message",e=>{if(e.source!==window.parent)return;if(e.data?.type==="streamlit:render")receive(e.data.args||{});});
+window.addEventListener("resize",()=>{const size=window.innerWidth<=710?15:30;if(PAGE!==size){PAGE=size;page=0;render();}else applyZoom();});
+new ResizeObserver(()=>height()).observe(document.body);
+post("streamlit:componentReady",{apiVersion:1});post("streamlit:setFrameHeight",{height:1040});
+window.NeftDashboard={render:receive,getState:()=>({selected:data.selected_id,page,filtered:rows.length,tab}),csvCell};
+</script></body></html>
